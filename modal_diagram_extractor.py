@@ -67,7 +67,7 @@ class OLMOCREngine:
         total_pages = len(doc)
         
         results = {
-            "raw_markdown": "",
+            "text_blocks": [],
             "equations": [],
             "diagrams": []
         }
@@ -125,8 +125,17 @@ class OLMOCREngine:
             new_tokens = output[:, prompt_length:]
             text_output = self.processor.tokenizer.batch_decode(new_tokens, skip_special_tokens=True)[0]
             
-            # Text accumulation
-            results["raw_markdown"] += text_output + "\n\n"
+            # Text accumulation (Chunked into text blocks as per Dev Team schema)
+            paragraphs = [p.strip() for p in text_output.split('\n\n') if p.strip()]
+            for i, para in enumerate(paragraphs):
+                results["text_blocks"].append({
+                    "block_id": f"pg{page_idx+1}_b{i}",
+                    "text": para,
+                    "bounding_box": {
+                        "x_min": 0, "y_min": 0, "x_max": 0, "y_max": 0
+                    },
+                    "page": page_idx + 1
+                })
             
             # Equation extraction
             inline_math = re.findall(r'\\\((.*?)\\\)', text_output, re.DOTALL)

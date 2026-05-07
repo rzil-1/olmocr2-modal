@@ -9,7 +9,14 @@ The output is a dictionary where the **keys** are the filenames of the processed
 ```json
 {
     "example_document.pdf": {
-        "raw_markdown": "# Title\n\nThis is the fully extracted continuous text of the document...",
+        "text_blocks": [
+            {
+                "block_id": "pg1_b0",
+                "text": "This is the fully extracted continuous text of the document...",
+                "bounding_box": {"x_min": 0, "y_min": 0, "x_max": 0, "y_max": 0},
+                "page": 1
+            }
+        ],
         "equations": [
             "\\frac{dD(t)}{dt}",
             "D(t) = 50 \\sin(t) \\implies \\frac{d(D(t))}{dt} = 50 \\cos(t)"
@@ -27,7 +34,7 @@ The output is a dictionary where the **keys** are the filenames of the processed
 ```
 
 ### Field Definitions:
-- **`raw_markdown` (String):** The complete, concatenated text of the entire PDF, formatted in clean Markdown. It includes headers, bullet points, and inline math markers.
+- **`text_blocks` (Array of Objects):** An array of extracted text chunks. Each object contains a unique `block_id` (e.g., pg1_b0), the literal `text`, the `page` number, and a `bounding_box` (currently set to 0 as semantic AI logic handles flow over strict spatial mapping).
 - **`equations` (Array of Strings):** A clean array containing every single LaTeX equation (both inline `\(\)` and block `\[\]`) found in the document. This allows your Evaluation Engine to instantly iterate over the mathematical formulas without needing to parse the raw text itself.
 - **`diagrams` (Array of Objects):** Contains metadata for every cropped image found in the PDF.
   - `alt_text`: The AI's semantic description of the diagram.
